@@ -39,7 +39,7 @@ public class UserServiceTest {
         //mocking
         when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.empty());
         when(encoder.encode(password)).thenReturn("encrypt_password");
-        when(userEntityRepository.save(any())).thenReturn(UserEntityFixture.get(userName, password));
+        when(userEntityRepository.save(any())).thenReturn(UserEntityFixture.get(userName, password, 1));
 
 
         Assertions.assertDoesNotThrow(()->userService.join(userName, password));
@@ -51,7 +51,7 @@ public class UserServiceTest {
         String password = "password";
 
         //가상의 userEntity 생성
-        UserEntity fixture = UserEntityFixture.get(userName, password);
+        UserEntity fixture = UserEntityFixture.get(userName, password, 1);
 
 
         //mocking
@@ -70,7 +70,7 @@ public class UserServiceTest {
         String password = "password";
 
         //가상의 userEntity 생성
-        UserEntity fixture = UserEntityFixture.get(userName, password);
+        UserEntity fixture = UserEntityFixture.get(userName, password, 1);
 
         //mocking
         when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
@@ -106,7 +106,7 @@ public class UserServiceTest {
         String wrongPassword = "password2";
 
         //가상의 userEntity 생성
-        UserEntity fixture = UserEntityFixture.get(userName, password);
+        UserEntity fixture = UserEntityFixture.get(userName, password, 1);
 
 
 

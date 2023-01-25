@@ -2,6 +2,7 @@ package com.fastcampus.snsproject.service;
 
 import com.fastcampus.snsproject.exception.ErrorCode;
 import com.fastcampus.snsproject.exception.SnsApplicationException;
+import com.fastcampus.snsproject.model.Post;
 import com.fastcampus.snsproject.model.entity.PostEntity;
 import com.fastcampus.snsproject.model.entity.UserEntity;
 import com.fastcampus.snsproject.repository.PostEntityRepository;
@@ -25,5 +26,37 @@ public class PostService {
         //post save
         PostEntity saved = postEntityRepository.save(PostEntity.of(title, body, userEntity));
         //return
+    }
+    @Transactional
+    public Post modify(String title, String body, String userName, Integer postId){
+        //user find
+        UserEntity userEntity = userEntityRepository.findByUserName(userName).orElseThrow(()->new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", userName)));
+        //post exist
+        PostEntity postEntity = postEntityRepository.findById(postId).orElseThrow(() -> new SnsApplicationException(ErrorCode.POST_NOT_FOUND, String.format("%s not founded", postId)));
+        //post permission
+        if(postEntity.getUser() != userEntity)
+        {
+            throw new SnsApplicationException(ErrorCode.INVALID_PERMISSION, String.format("%s has no permission with %s", userName, postId));
+        }
+
+        postEntity.setTitle(title);
+        postEntity.setBody(body);
+
+        return Post.fromEntity(postEntityRepository.saveAndFlush(postEntity));
+    }
+
+    @Transactional
+    public void delete(String userName, Integer postId){
+        //user find
+        UserEntity userEntity = userEntityRepository.findByUserName(userName).orElseThrow(()->new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", userName)));
+        //post exist
+        PostEntity postEntity = postEntityRepository.findById(postId).orElseThrow(() -> new SnsApplicationException(ErrorCode.POST_NOT_FOUND, String.format("%s not founded", postId)));
+        //post permission
+        if(postEntity.getUser() != userEntity)
+        {
+            throw new SnsApplicationException(ErrorCode.INVALID_PERMISSION, String.format("%s has no permission with %s", userName, postId));
+        }
+
+        postEntityRepository.delete(postEntity);
     }
 }
